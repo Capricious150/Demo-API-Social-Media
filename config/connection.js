@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 // Wrap Mongoose around local connection to MongoDB
 // TODO - UPDATE DB
-mongoose.connect('mongodb://localhost:27017/personalTaskListDB', {
+mongoose.connect('mongodb://localhost:27017/socialMediaDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
