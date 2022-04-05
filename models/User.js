@@ -7,4 +7,7 @@ const userSchema = new Schema({
     friends: Array
 })
 
+
+const User = model('user', userSchema);
+
 module.exports = User;
