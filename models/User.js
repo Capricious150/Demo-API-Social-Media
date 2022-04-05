@@ -5,6 +5,16 @@ const userSchema = new Schema({
     email: {type:String, required: true},
     thoughts: Array,
     friends: Array
+    },
+    {
+        toJSON: {
+          virtuals: true,
+        },
+        id: false,
+    })
+
+userSchema.virtual('friendCount').get(function(){
+    return this.friends.length
 })
 
 
