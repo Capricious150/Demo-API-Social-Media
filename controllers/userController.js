@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const Thoughts = require('../models/Thought')
 const emailRegex = new RegExp('([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})')
 
 
@@ -14,7 +15,7 @@ const userOperations = {
     getUserById: async (req,res) => {
         const data = await User.find({
             _id: req.params.id
-        })
+        }).populate('thoughts').populate('friends')
         if (data){
             res.status(200).json(data)
         } else {
@@ -93,6 +94,12 @@ const userOperations = {
         }
     },
     deleteUser: async (req,res) =>{
+        const deleteMyThoughts = await User.findOne({
+            _id: req.params.id
+        }).then((user) => {
+            return Thoughts.deleteMany({username: user.username})
+        })
+        console.log(deleteMyThoughts)
         const data = await User.deleteOne({
             _id: req.params.id
         })
@@ -107,7 +114,7 @@ const userOperations = {
             _id: req.params.userId
         },
         {
-            friends: {$push: req.body.friendId}
+            $push: {friends: req.params.friendId}
         })
         if (data){
             res.status(200).json(data)
@@ -120,7 +127,7 @@ const userOperations = {
             _id: req.params.userId
         },
         {
-            friends: {$pull: req.params.friendId}
+            $pull: {friends: req.params.friendId}
         })
         if (data){
             res.status(200).json(data)

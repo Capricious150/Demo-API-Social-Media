@@ -1,4 +1,5 @@
 const Thoughts = require('../models/Thought')
+const User = require('../models/User')
 
 const thoughtOperations = {
     getThoughts: async (req,res) => {
@@ -21,18 +22,24 @@ const thoughtOperations = {
     },
     createThought: async (req,res) => {
         const data = await Thoughts.create(req.body)
-        if (data){
-            res.status(200).json(data)
-        } else {
-            res.status(500).json({message: "Something went wrong, check server logs"})
-        }
-    },
+            .then((thought) =>{
+                return User.findOneAndUpdate({
+                    username: req.body.username,
+                },
+                {$push: {thoughts: thought._id}})
+            })
+            .then((user) => {
+                !user 
+                    ? res.status(404).json({ message: 'Thought created, but found no user with that username' })
+                : res.json('Thought created')
+            })
+        },
     updateThought: async (req,res) => {
         const data = await Thoughts.updateOne({
             _id: req.params.id
         },
         {
-            thoughtText: req.body.thought
+            thoughtText: req.body.thoughtText
         })
         if (data){
             res.status(200).json(data)
@@ -55,7 +62,7 @@ const thoughtOperations = {
             _id: req.params.thoughtId
         },
         {
-            reactions: {$push: req.body}
+            $push: {reactions: req.body}
         })
         if (data){
             res.status(200).json(data)
@@ -68,7 +75,7 @@ const thoughtOperations = {
             _id: req.params.thoughtId
         },
         {
-            reactions:{$pull: req.params.reactionId}
+            $pull:{reactions: {reactionId: req.params.reactionId}}
         })
         if (data){
             res.status(200).json(data)
