@@ -78,6 +78,7 @@ const userOperations = {
 
         if (validEmail === false){
             res.status(400).json({message: "Email is not valid"})
+            return
         }
         
         const data = await User.updateOne({
